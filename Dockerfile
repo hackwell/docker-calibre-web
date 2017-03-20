@@ -6,10 +6,7 @@ RUN \
   yum install -y ImageMagick-devel libevent libxml2 libxml2-devel libxml2-python libxslt libxslt-devel python-devel gcc && \
   # Install Gunicorn, Wand
   easy_install -O2 pip && \
-  pip install --compile --no-cache-dir Wand && \
-  pip install --compile --no-cache-dir gunicorn && \
-  pip install --compile --no-cache-dir lxml && \
-  pip install --compile --no-cache-dir gevent google-api-python-client pydrive && \
+  pip install --no-cache-dir Wand gunicorn lxml gevent google-api-python-client pydrive && \
   yum remove -y gcc libxslt-devel python-devel libxml2-devel && \
   yum autoremove -y && \
   yum clean all && rm -rf /tmp/yum*
@@ -25,8 +22,7 @@ RUN \
   mkdir -p /opt/app && \
   tar zxf /tmp/calibre-cps.tar.gz -C /opt/app --strip-components=1 && \
   rm /tmp/calibre-cps.tar.gz && \
-  mkdir -p /opt/app/cps/db && \
-  pip install --compile --no-cache-dir -r /opt/app/requirements.txt && \
+  pip install --no-cache-dir -r /opt/app/requirements.txt && \
   ln -s /data/app.db /opt/app/app.db && \
   chown -R www:www /opt/app
 
