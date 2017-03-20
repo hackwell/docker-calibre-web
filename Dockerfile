@@ -1,5 +1,15 @@
 FROM million12/nginx:latest
 
+ENV \
+  # - APP_REPO, APP_BRANCH: the APP GitHub repository and related branch
+  # for related branch or tag use e.g. master
+  APP_REPO="https://github.com/janeczku/calibre-web" \
+  APP_BRANCH="master" \
+  # - AMAZON_KG_*: KindleGen is a command line tool which enables publishers to work
+  # in an automated environment with a variety of source content including HTML, XHTML or EPUB
+  AMAZON_KG_TAR="kindlegen_linux_2.6_i386_v2_9.tar.gz" \
+  AMAZON_KG_URL="http://kindlegen.s3.amazonaws.com/kindlegen_linux_2.6_i386_v2_9.tar.gz"
+
 RUN \
   # Install ImageMagick & libxml
   rpm --rebuilddb && yum update -y && \
@@ -12,8 +22,8 @@ RUN \
   yum clean all && rm -rf /tmp/yum*
 
 ADD container-files /
-ADD vendor/kindlegen /opt/app/vendor/kindlegen
-ADD https://github.com/janeczku/calibre-web/archive/master.tar.gz /tmp/calibre-cps.tar.gz
+ADD ${AMAZON_KG_URL} /tmp/${AMAZON_KG_TAR}
+ADD ${APP_REPO}/archive/${APP_BRANCH}.tar.gz /tmp/calibre-cps.tar.gz
 
 RUN \
   # Fix locale
@@ -21,9 +31,12 @@ RUN \
   # Install calibre-web
   mkdir -p /opt/app && \
   tar zxf /tmp/calibre-cps.tar.gz -C /opt/app --strip-components=1 && \
-  rm /tmp/calibre-cps.tar.gz && \
+  tar zxf /tmp/kindlegen_linux_2.6_i386_v2_9.tar.gz -C /opt/app/vendor && \
   pip install --no-cache-dir -r /opt/app/requirements.txt && \
+  rm /tmp/calibre-cps.tar.gz && \
+  rm /tmp/${AMAZON_KG_TAR} && \
   ln -s /data/app.db /opt/app/app.db && \
+  ln -s /data/gdrive.db /opt/app/gdrive.db && \
   chown -R www:www /opt/app
 
 ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 LANGUAGE=en_US:en
