@@ -5,6 +5,7 @@ RUN \
   rpm --rebuilddb && yum update -y && \
   yum install -y ImageMagick-devel libxml2 libxml2-devel libxml2-python libxslt libxslt-devel python-devel gcc && \
   # Install Gunicorn, Wand
+  easy_install pip && \
   easy_install Wand && \
   easy_install gunicorn && \
   easy_install lxml && \
@@ -23,6 +24,11 @@ RUN \
   mkdir -p /opt/app && \
   tar zxf /tmp/calibre-cps.tar.gz -C /opt/app --strip-components=1 && \
   rm /tmp/calibre-cps.tar.gz && \
+  mkdir -p /opt/app/cps/db && \
+  pip install -r /opt/app/requirements.txt && \
+  ln -s /opt/app/cps/db/app.db /opt/app/app.db && \
   chown -R www:www /opt/app
+
+VOLUME ["/opt/app/cps/db/"]
 
 ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 LANGUAGE=en_US:en
