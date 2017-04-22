@@ -1,4 +1,5 @@
-FROM million12/nginx:latest
+#FROM million12/nginx:latest
+FROM nginx:latest
 
 ENV \
   # - APP_REPO, APP_BRANCH: the APP GitHub repository and related branch
